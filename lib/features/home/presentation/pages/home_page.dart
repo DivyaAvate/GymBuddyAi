@@ -1,40 +1,67 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/core/constants/app_colors.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-import 'package:mobile/features/home/presentation/widgets/workout_card.dart';
-import 'package:mobile/features/home/presentation/widgets/xp_progress_bar.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../profile/presentation/providers/gamification_provider.dart';
+import '../../../steps/presentation/providers/steps_provider.dart';
+import '../widgets/workout_card.dart';
+import '../widgets/xp_progress_bar.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user        = ref.watch(authProvider);
+    final gamification = ref.watch(gamificationProvider);
+    final steps       = ref.watch(stepsProvider);
+
+    final firstName = user?.name?.split(' ').first ?? 'there';
+    final hour      = DateTime.now().hour;
+    final greeting  = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.bgPrimary,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Good Morning, Alex",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Text(
-                "Level 12  •  ⚡ 7 Day Streak",
-                style: TextStyle(color: AppColors.textSecondary),
-              ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 14),
+
+              // ── Header ──────────────────────────────────────────
+              _buildHeader(context, greeting, firstName),
+              const SizedBox(height: 16),
+
+              // ── Stats Row ────────────────────────────────────────
+              _buildStatsRow(gamification),
+              const SizedBox(height: 14),
+
+              // ── Today's Workout ──────────────────────────────────
               const WorkoutCard(),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
+
+              // ── Step Tracker ─────────────────────────────────────
+              _buildStepTracker(steps),
+              const SizedBox(height: 12),
+
+              // ── Recovery Score ───────────────────────────────────
               _buildRecoveryScore(),
+              const SizedBox(height: 12),
+
+              // ── XP Progress ──────────────────────────────────────
+              XPProgressBar(
+                currentXP: gamification?.currentXP ?? 0,
+                totalXP:   gamification?.nextLevelXP ?? 3000,
+              ),
+              const SizedBox(height: 12),
+
+              // ── AI Coach Teaser ──────────────────────────────────
+              _buildAICoachTeaser(context),
               const SizedBox(height: 20),
-              const XPProgressBar(currentXP: 2450, totalXP: 3000),
             ],
           ),
         ),
@@ -42,13 +69,182 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildRecoveryScore() {
+  // ── Header ────────────────────────────────────────────────────────────────
+
+  Widget _buildHeader(BuildContext context, String greeting, String name) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '$greeting 💪',
+              style: const TextStyle(
+                color: AppColors.textMuted,
+                fontSize: 12,
+              ),
+            ),
+            Text(
+              name,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        Stack(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: AppColors.bgCard,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.border),
+              ),
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                icon: const Icon(
+                  Icons.notifications_outlined,
+                  color: AppColors.textMuted,
+                  size: 20,
+                ),
+                onPressed: () {},
+              ),
+            ),
+            // Notification dot
+            Positioned(
+              top: 6,
+              right: 6,
+              child: Container(
+                width: 7,
+                height: 7,
+                decoration: const BoxDecoration(
+                  color: AppColors.accentGreen,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // ── Stats Row ─────────────────────────────────────────────────────────────
+
+  Widget _buildStatsRow(dynamic gamification) {
+    return Row(
+      children: [
+        _StatMini(
+          value: '${gamification?.streakDays ?? 0}',
+          label: 'Day streak',
+          valueColor: AppColors.accentGreen,
+        ),
+        const SizedBox(width: 8),
+        _StatMini(
+          value: '${gamification?.totalWorkouts ?? 0}',
+          label: 'Workouts',
+        ),
+        const SizedBox(width: 8),
+        _StatMini(
+          value: 'Lv ${gamification?.level ?? 1}',
+          label: 'Current level',
+          valueColor: AppColors.accentBlue,
+        ),
+      ],
+    );
+  }
+
+  // ── Step Tracker ──────────────────────────────────────────────────────────
+
+  Widget _buildStepTracker(dynamic steps) {
+    final count    = steps?.todaySteps ?? 0;
+    final goal     = steps?.goalSteps  ?? 10000;
+    final progress = (count / goal).clamp(0.0, 1.0);
+    final percent  = (progress * 100).toInt();
+
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.border),
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border, width: 0.5),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 64,
+            height: 64,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                CircularProgressIndicator(
+                  value: progress,
+                  strokeWidth: 7,
+                  backgroundColor: AppColors.accentGreen.withOpacity(0.12),
+                  color: AppColors.accentGreen,
+                  strokeCap: StrokeCap.round,
+                ),
+                Text(
+                  '$percent%',
+                  style: const TextStyle(
+                    color: AppColors.accentGreen,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 14),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '$count',
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Text(
+                'Steps today',
+                style: TextStyle(
+                  color: AppColors.textMuted,
+                  fontSize: 12,
+                ),
+              ),
+              Text(
+                'Goal: $goal steps',
+                style: const TextStyle(
+                  color: AppColors.accentGreen,
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Recovery Score ────────────────────────────────────────────────────────
+
+  Widget _buildRecoveryScore() {
+    const score = 0.82;
+    const scoreInt = 82;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -57,23 +253,36 @@ class HomePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "RECOVERY SCORE",
+                'RECOVERY SCORE',
                 style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 12,
+                  color: AppColors.textMuted,
+                  fontSize: 11,
+                  letterSpacing: 0.8,
                 ),
               ),
+              SizedBox(height: 4),
               Text(
-                "82",
+                '$scoreInt',
                 style: TextStyle(
-                  color: AppColors.primaryGreen,
-                  fontSize: 48,
-                  fontWeight: FontWeight.bold,
+                  color: AppColors.accentGreen,
+                  fontSize: 44,
+                  fontWeight: FontWeight.w700,
+                  height: 1,
                 ),
               ),
-              Text(
-                "Train Hard Today",
-                style: TextStyle(color: Colors.white),
+              SizedBox(height: 4),
+              Row(
+                children: [
+                  Icon(Icons.circle, color: AppColors.accentGreen, size: 8),
+                  SizedBox(width: 5),
+                  Text(
+                    'Train Hard Today',
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -81,13 +290,131 @@ class HomePage extends StatelessWidget {
             height: 80,
             width: 80,
             child: CircularProgressIndicator(
-              value: 0.82,
-              strokeWidth: 10,
-              backgroundColor: AppColors.border,
-              color: AppColors.primaryGreen,
+              value: score,
+              strokeWidth: 8,
+              backgroundColor: AppColors.accentGreen.withOpacity(0.12),
+              color: AppColors.accentGreen,
+              strokeCap: StrokeCap.round,
             ),
-          )
+          ),
         ],
+      ),
+    );
+  }
+
+  // ── AI Coach Teaser ───────────────────────────────────────────────────────
+
+  Widget _buildAICoachTeaser(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.go('/coach'),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppColors.accentBlue.withOpacity(0.12),
+              AppColors.accentGreen.withOpacity(0.08),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: AppColors.accentBlue.withOpacity(0.25),
+            width: 0.5,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: AppColors.accentBlue.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.smart_toy_outlined,
+                color: AppColors.accentBlue,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Ask your AI coach anything',
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    '"How do I improve my bench press form?"',
+                    style: TextStyle(
+                      color: AppColors.textMuted,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right,
+              color: AppColors.textMuted,
+              size: 18,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Stat Mini Card ───────────────────────────────────────────────────────────
+
+class _StatMini extends StatelessWidget {
+  final String value;
+  final String label;
+  final Color valueColor;
+
+  const _StatMini({
+    required this.value,
+    required this.label,
+    this.valueColor = AppColors.textPrimary,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColors.bgCard,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: AppColors.border, width: 0.5),
+        ),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: TextStyle(
+                color: valueColor,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.textMuted,
+                fontSize: 10,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

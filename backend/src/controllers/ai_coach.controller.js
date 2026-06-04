@@ -1,13 +1,16 @@
-const aiService = require('../services/ai_coach.service');
+const aiCoachService = require('../services/ai_coach.service');
 
-exports.chat = async (req, res, next) => {
-    try {
-        const { message } = req.body;
-        if (!message) return res.status(400).json({ message: "Message is required" });
+// POST /api/coach/ask
+exports.askCoach = async (req, res, next) => {
+  try {
+    const { message } = req.body;
+    const userId      = req.user.id;
 
-        const reply = await aiService.askCoach(req.user.id, message);
-        res.json({ reply });
-    } catch (e) {
-        next(e);
+    if (!message?.trim()) {
+      return res.status(400).json({ message: 'Message is required' });
     }
+
+    const reply = await aiCoachService.askCoach(userId, message);
+    res.status(200).json({ reply });
+  } catch (e) { next(e); }
 };

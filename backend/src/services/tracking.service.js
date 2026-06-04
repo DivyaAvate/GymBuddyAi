@@ -1,45 +1,80 @@
 const { WorkoutLog, ExerciseLog, SetLog } = require('../models/tracking.model');
-const { Op } = require('sequelize');
+const gamificationService = require('./gamification.service');
 
 class TrackingService {
-    async startSession(userId, planId) {
-        return await WorkoutLog.create({ userId, planId, status: 'active' });
-    }
 
-    async logSet(exerciseLogId, userId, exerciseId, weight, reps) {
-        // Check if this is a PR (Personal Record)
-        const maxWeight = await SetLog.max('weight', {
-            include: [{
-                model: ExerciseLog,
-                where: { exerciseId },
-                include: [{ model: WorkoutLog, where: { userId } }]
-            }]
-        });
+  // ── Start workout session ──────────────────────────────────
+  async startWorkout({ userId, planId, workoutDay }) {
+    return await WorkoutLog.create({
+      userId,
+      planId:     planId ?? null,
+      workoutDay: workoutDay ?? null,
+      status:    'active',
+      startTime:  new Date(),
+    });
+  }
 
-        const isPR = weight > (maxWeight || 0);
-        return await SetLog.create({ exerciseLogId, weight, reps, isPR });
-    }
+  // ── Log a single set ───────────────────────────────────────
+  async logSet({ userId, sessionId, exerciseId, setNumber, weight, reps }) {
+    // Find or create exercise log for this session
+    let [exerciseLog] = await ExerciseLog.findOrCreate({
+      where: { workoutLogId: sessionId, exerciseId },
+      defaults: { workoutLogId: sessionId, exerciseId },
+    });
 
-    async finishSession(workoutLogId, notes) {
-        const session = await WorkoutLog.findByPk(workoutLogId, {
-            include: [{ model: ExerciseLog, as: 'exercises', include: [{ model: SetLog, as: 'sets' }] }]
-        });
+    // PR check — highest weight ever logged for this exercise by this user
+    const maxWeight = await SetLog.max('weight', {
+      include: [{
+        model: ExerciseLog,
+        where: { exerciseId },
+        include: [{ model: WorkoutLog, where: { userId } }],
+      }],
+    });
 
-        // Calculate total volume
-        let totalVolume = 0;
-        session.exercises.forEach(ex => {
-            ex.sets.forEach(set => {
-                totalVolume += (set.weight * set.reps);
-            });
-        });
+    const isPR = weight > (maxWeight || 0);
 
-        return await session.update({ 
-            endTime: new Date(), 
-            status: 'completed', 
-            totalVolume, 
-            notes 
-        });
-    }
+    const set = await SetLog.create({
+      exerciseLogId: exerciseLog.id,
+      setNumber,
+      weight,
+      reps,
+      isPR,
+    });
+
+    return { id: set.id, isPR };
+  }
+
+  // ── Finish workout session ─────────────────────────────────
+  async finishWorkout({ userId, sessionId, durationSec, totalSets, totalVolume, exercises }) {
+    const session = await WorkoutLog.findOne({
+      where: { id: sessionId, userId }, // ensure user owns this session
+    });
+
+    if (!session) throw new Error('Session not found');
+
+    // Save summary to DB
+    await session.update({
+      endTime:     new Date(),
+      status:      'completed',
+      durationSec: durationSec ?? 0,
+      totalSets:   totalSets   ?? 0,
+      totalVolume: totalVolume ?? 0,
+    });
+
+    // Award XP and check for new achievements
+    const gamification = await gamificationService.processWorkoutCompletion({
+      userId,
+      durationSec,
+      totalVolume,
+      totalSets,
+    });
+
+    return {
+      xpEarned:     gamification.xpEarned,
+      newLevel:     gamification.newLevel     ?? null,
+      achievements: gamification.achievements ?? [],
+    };
+  }
 }
 
 module.exports = new TrackingService();
