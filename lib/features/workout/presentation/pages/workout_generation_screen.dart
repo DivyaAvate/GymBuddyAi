@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // 🔴 ADD THESE (IMPORTANT)
-import 'package:mobile/features/workout/presentation/providers/workout_generator_provider.dart';
-import 'package:mobile/features/workout/presentation/widgets/workout_plan_view.dart';
+import 'package:gymbuddy_ai/features/workout/presentation/providers/workout_generator_provider.dart';
+import 'package:gymbuddy_ai/features/workout/presentation/widgets/workout_plan_view.dart';
 
 class WorkoutGenerationScreen extends ConsumerStatefulWidget {
   const WorkoutGenerationScreen({super.key});

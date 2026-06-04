@@ -2,8 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 
 // 🔴 ADD YOUR PROJECT IMPORTS HERE
-import 'package:mobile/core/network/dio_provider.dart';
-import 'package:mobile/features/workout/domain/models/workout_plan_model.dart';
+import 'package:gymbuddy_ai/core/network/dio_provider.dart';
+import 'package:gymbuddy_ai/features/workout/data/models/workout_plan_model.dart';
 
 final workoutGeneratorProvider = StateNotifierProvider<
     WorkoutNotifier, AsyncValue<WorkoutPlanModel?>>((ref) {

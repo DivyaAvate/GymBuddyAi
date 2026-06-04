@@ -10,7 +10,6 @@ import '../../features/workout/presentation/pages/workout_generation_screen.dart
 import '../../features/workout/presentation/pages/active_workout_screen.dart';
 import '../../features/workout/presentation/pages/exercise_detail_page.dart';
 import '../../features/workout/presentation/pages/exercise_list_page.dart';
-import '../../features/workout/presentation/pages/netflix_workout_screen.dart';
 import '../../features/steps/presentation/pages/steps_screen.dart';
 import '../../features/ai_coach/presentation/pages/chat_screen.dart';
 import '../../features/profile/presentation/pages/dashboard_page.dart';
@@ -23,8 +22,8 @@ final appRouter = GoRouter(
   initialLocation: '/login',
   debugLogDiagnostics: true,
 
-  // Global error page
   errorBuilder: (context, state) => Scaffold(
+    backgroundColor: const Color(0xFF0F1117),
     body: Center(
       child: Text(
         'Page not found: ${state.uri}',
@@ -34,99 +33,54 @@ final appRouter = GoRouter(
   ),
 
   routes: [
-    // ─── Auth Routes ───────────────────────────────────────────
+    // ─── Auth ──────────────────────────────────────────────────
     GoRoute(
       path: '/login',
       name: 'login',
-      builder: (context, state) => const LoginPage(),
+      builder: (_, __) => const LoginPage(),
     ),
     GoRoute(
       path: '/register',
       name: 'register',
-      builder: (context, state) => const RegisterPage(),
+      builder: (_, __) => const RegisterPage(),
     ),
     GoRoute(
       path: '/onboarding',
       name: 'onboarding',
-      builder: (context, state) => const OnboardingPage(),
+      builder: (_, __) => const OnboardingPage(),
     ),
 
-    // ─── Main Shell (Bottom Nav) ───────────────────────────────
+    // ─── Main Shell ────────────────────────────────────────────
     ShellRoute(
-      builder: (context, state, child) => MainLayout(child: child),
+      builder: (_, __, child) => MainLayout(child: child),
       routes: [
-        GoRoute(
-          path: '/home',
-          name: 'home',
-          builder: (context, state) => const HomePage(),
-        ),
-        GoRoute(
-          path: '/workout',
-          name: 'workout',
-          builder: (context, state) => const WorkoutGenerationScreen(),
-        ),
-        GoRoute(
-          path: '/steps',
-          name: 'steps',
-          builder: (context, state) => const StepsScreen(),
-        ),
-        GoRoute(
-          path: '/coach',
-          name: 'coach',
-          builder: (context, state) => const ChatScreen(),
-        ),
-        GoRoute(
-          path: '/profile',
-          name: 'profile',
-          builder: (context, state) => const DashboardPage(),
-        ),
-        GoRoute(
-          path: '/progress',
-          name: 'progress',
-          builder: (context, state) => const ProgressDashboardPage(),
-        ),
-        GoRoute(
-          path: '/recovery',
-          name: 'recovery',
-          builder: (context, state) => const RecoveryDashboardPage(),
-        ),
-        GoRoute(
-          path: '/achievements',
-          name: 'achievements',
-          builder: (context, state) => const AchievementsPage(),
-        ),
-        GoRoute(
-          path: '/leaderboard',
-          name: 'leaderboard',
-          builder: (context, state) => const LeaderboardPage(),
-        ),
+        GoRoute(path: '/home',        builder: (_, __) => const HomePage()),
+        GoRoute(path: '/workout',     builder: (_, __) => const WorkoutGenerationScreen()),
+        GoRoute(path: '/steps',       builder: (_, __) => const StepsScreen()),
+        GoRoute(path: '/coach',       builder: (_, __) => const ChatScreen()),
+        GoRoute(path: '/profile',     builder: (_, __) => const DashboardPage()),
+        GoRoute(path: '/progress',    builder: (_, __) => const ProgressDashboardPage()),
+        GoRoute(path: '/recovery',    builder: (_, __) => const RecoveryDashboardPage()),
+        GoRoute(path: '/achievements',builder: (_, __) => const AchievementsPage()),
+        GoRoute(path: '/leaderboard', builder: (_, __) => const LeaderboardPage()),
       ],
     ),
 
-    // ─── Standalone Routes (no bottom nav) ────────────────────
+    // ─── Standalone ────────────────────────────────────────────
     GoRoute(
       path: '/active-workout',
-      name: 'active-workout',
-      builder: (context, state) => const ActiveWorkoutScreen(),
+      builder: (_, __) => const ActiveWorkoutScreen(),
     ),
     GoRoute(
       path: '/exercise-list',
-      name: 'exercise-list',
-      builder: (context, state) => const ExerciseListPage(),
+      builder: (_, __) => const ExerciseListPage(),
     ),
     GoRoute(
       path: '/exercise-detail',
-      name: 'exercise-detail',
       builder: (context, state) {
-        // Pass exercise id via extra or queryParam
         final exerciseId = state.uri.queryParameters['id'] ?? '';
         return ExerciseDetailPage(exerciseId: exerciseId);
       },
-    ),
-    GoRoute(
-      path: '/cinematic-workout',
-      name: 'cinematic-workout',
-      builder: (context, state) => const NetflixWorkoutScreen(),
     ),
   ],
 );

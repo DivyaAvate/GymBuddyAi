@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/core/constants/app_colors.dart';
+import 'package:gymbuddy_ai/core/constants/app_colors.dart';
 
 class WorkoutCard extends StatelessWidget {
   const WorkoutCard({super.key});
@@ -9,7 +9,7 @@ class WorkoutCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
+        color: AppColors.bgCard,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppColors.border),
       ),
@@ -19,7 +19,7 @@ class WorkoutCard extends StatelessWidget {
           Text(
             "TODAY'S WORKOUT",
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: AppColors.textMuted,
               fontSize: 12,
             ),
           ),
@@ -39,14 +39,14 @@ class WorkoutCard extends StatelessWidget {
 
           Text(
             "8 Exercises  •  60 Minutes  •  420 Cal",
-            style: TextStyle(color: AppColors.textSecondary),
+            style: TextStyle(color: AppColors.textMuted),
           ),
 
           const SizedBox(height: 20),
 
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryGreen,
+              backgroundColor: AppColors.accentGreen,
               foregroundColor: Colors.black,
               minimumSize: const Size(double.infinity, 56),
               shape: RoundedRectangleBorder(

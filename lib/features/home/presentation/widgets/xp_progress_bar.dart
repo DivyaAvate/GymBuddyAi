@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/core/constants/app_colors.dart';
+import 'package:gymbuddy_ai/core/constants/app_colors.dart';
 
 class XPProgressBar extends StatelessWidget {
   final int currentXP;
@@ -24,14 +24,14 @@ class XPProgressBar extends StatelessWidget {
             const Text(
               "LEVEL PROGRESS",
               style: TextStyle(
-                color: AppColors.textSecondary,
+                color: AppColors.textMuted,
                 fontSize: 12,
               ),
             ),
             Text(
               "$currentXP / $totalXP XP",
               style: const TextStyle(
-                color: AppColors.textSecondary,
+                color: AppColors.textMuted,
                 fontSize: 12,
               ),
             ),
@@ -45,7 +45,7 @@ class XPProgressBar extends StatelessWidget {
           child: LinearProgressIndicator(
             value: progress,
             backgroundColor: AppColors.border,
-            color: AppColors.primaryGreen,
+            color: AppColors.accentGreen,
             minHeight: 10,
           ),
         ),

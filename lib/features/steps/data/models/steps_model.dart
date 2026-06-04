@@ -1,8 +1,19 @@
 class StepTrend {
   final DateTime date;
   final int steps;
-  final double calories;
 
-  StepTrend({required this.date, required this.steps}) 
-    : calories = steps * 0.04; // Simple estimate: 0.04 cal per step
+  const StepTrend({
+    required this.date,
+    required this.steps,
+  });
+
+  factory StepTrend.fromJson(Map<String, dynamic> json) => StepTrend(
+        date:  DateTime.parse(json['date'] as String),
+        steps: json['steps'] as int,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'date':  date.toIso8601String(),
+        'steps': steps,
+      };
 }

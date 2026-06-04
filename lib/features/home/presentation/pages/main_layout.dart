@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-import 'package:mobile/core/constants/app_colors.dart';
-import 'package:mobile/features/home/presentation/pages/home_page.dart';
+import 'package:gymbuddy_ai/core/constants/app_colors.dart';
+import 'package:gymbuddy_ai/features/home/presentation/pages/home_page.dart';
 
 // FIX: Use actual existing pages from your project
-import 'package:mobile/features/workout/presentation/pages/workout_generation_screen.dart';
-import 'package:mobile/features/profile/presentation/pages/dashboard_page.dart';
+import 'package:gymbuddy_ai/features/workout/presentation/pages/workout_generation_screen.dart';
+import 'package:gymbuddy_ai/features/profile/presentation/pages/dashboard_page.dart';
 
 // TODO: Replace these with real files when you create them
-// import 'package:mobile/features/progress/presentation/pages/progress_dashboard_page.dart';
-// import 'package:mobile/features/ai_coach/presentation/pages/chat_screen.dart';
+// import 'package:gymbuddy_ai/features/progress/presentation/pages/progress_dashboard_page.dart';
+// import 'package:gymbuddy_ai/features/ai_coach/presentation/pages/chat_screen.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -34,7 +34,7 @@ class _MainLayoutState extends State<MainLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.bgPrimary,
       body: IndexedStack(
         index: _currentIndex,
         children: _screens,
@@ -42,9 +42,9 @@ class _MainLayoutState extends State<MainLayout> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
-        backgroundColor: AppColors.background,
-        selectedItemColor: AppColors.primaryGreen,
-        unselectedItemColor: AppColors.textSecondary,
+        backgroundColor: AppColors.bgPrimary,
+        selectedItemColor: AppColors.accentGreen,
+        unselectedItemColor: AppColors.textMuted,
         onTap: (index) => setState(() => _currentIndex = index),
         items: const [
           BottomNavigationBarItem(
