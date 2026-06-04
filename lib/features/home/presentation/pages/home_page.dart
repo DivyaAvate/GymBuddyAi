@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../../../core/constants/app_colors.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../profile/presentation/providers/gamification_provider.dart';
 import '../../../steps/presentation/providers/steps_provider.dart';
 import '../widgets/workout_card.dart';
@@ -14,11 +12,11 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user        = ref.watch(authProvider);
-    final gamification = ref.watch(gamificationProvider);
-    final steps       = ref.watch(stepsProvider);
+    final gamificationAsync = ref.watch(gamificationProvider);
+    final steps             = ref.watch(stepsProvider);
 
-    final firstName = user?.name?.split(' ').first ?? 'there';
+    final gamification = gamificationAsync.valueOrNull;
+    final firstName    = 'there'; // replace with auth provider when ready
     final hour      = DateTime.now().hour;
     final greeting  = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 

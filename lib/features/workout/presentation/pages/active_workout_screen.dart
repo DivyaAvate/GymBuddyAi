@@ -516,7 +516,10 @@ class _ExerciseCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               ),
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('Add Set', fontSize: 13)),
+              label: const Text(
+                'Add Set',
+                style: TextStyle(fontSize: 13),
+              ),
             ),
           ),
         ],

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:health/health.dart';
 import '../../../../core/network/dio_provider.dart';
 import '../../../../core/constants/api_endpoints.dart';
-import '../../data/models/steps_model.dart';
+import '../models/steps_model.dart';
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
