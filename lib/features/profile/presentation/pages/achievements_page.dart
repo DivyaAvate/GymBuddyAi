@@ -23,7 +23,7 @@ class AchievementsPage extends ConsumerWidget {
                 nextLevelXp: data['nextLevelXp']
               ),
               loading: () => const LinearProgressIndicator(),
-              error: (_, __) => const Text("Error loading level"),
+              error: (_, _) => const Text("Error loading level"),
             ),
             
             // 2. Badges Grid
@@ -41,7 +41,7 @@ class AchievementsPage extends ConsumerWidget {
                 itemBuilder: (context, i) => _BadgeItem(badge: list[i]),
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (_, __) => const Text("Error loading badges"),
+              error: (_, _) => const Text("Error loading badges"),
             ),
           ],
         ),

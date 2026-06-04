@@ -1,3 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:mobile/core/constants/app_colors.dart';
+
+import 'package:mobile/features/home/presentation/widgets/workout_card.dart';
+import 'package:mobile/features/home/presentation/widgets/xp_progress_bar.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -11,12 +17,22 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Good Morning, Alex", style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-              const Text("Level 12  •  ⚡ 7 Day Streak", style: TextStyle(color: AppColors.textSecondary)),
+              const Text(
+                "Good Morning, Alex",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Text(
+                "Level 12  •  ⚡ 7 Day Streak",
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
               const SizedBox(height: 30),
               const WorkoutCard(),
               const SizedBox(height: 20),
-              _buildRecoveryScore(), // Recovery Card logic
+              _buildRecoveryScore(),
               const SizedBox(height: 20),
               const XPProgressBar(currentXP: 2450, totalXP: 3000),
             ],
@@ -40,13 +56,30 @@ class HomePage extends StatelessWidget {
           const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("RECOVERY SCORE", style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-              Text("82", style: TextStyle(color: AppColors.primaryGreen, fontSize: 48, fontWeight: FontWeight.bold)),
-              Text("Train Hard Today", style: TextStyle(color: Colors.white)),
+              Text(
+                "RECOVERY SCORE",
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                ),
+              ),
+              Text(
+                "82",
+                style: TextStyle(
+                  color: AppColors.primaryGreen,
+                  fontSize: 48,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                "Train Hard Today",
+                style: TextStyle(color: Colors.white),
+              ),
             ],
           ),
           SizedBox(
-            height: 80, width: 80,
+            height: 80,
+            width: 80,
             child: CircularProgressIndicator(
               value: 0.82,
               strokeWidth: 10,
