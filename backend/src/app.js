@@ -9,6 +9,7 @@ const exerciseRoutes  = require('./routes/exercise.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
 const trackingRoutes  = require('./routes/tracking.routes');
 const workoutRoutes   = require('./routes/workout.routes');
+const gymRoutes       = require('./routes/gym.routes');
 const stepsRoutes     = require('./routes/steps.routes');
 const aiCoachRoutes   = require('./routes/ai_coach.routes');
 
@@ -34,6 +35,7 @@ app.use('/api/exercises', exerciseRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/tracking',  trackingRoutes);
 app.use('/api/workout',   workoutRoutes);
+app.use('/api/gyms',      gymRoutes);
 app.use('/api/steps',     stepsRoutes);
 app.use('/api/coach',     aiCoachRoutes);
 

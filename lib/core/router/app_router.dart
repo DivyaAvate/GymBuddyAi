@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
+import '../../features/gym/presentation/pages/gym_list_screen.dart';
+import '../../features/gym/presentation/pages/gym_owner_dashboard.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
@@ -33,6 +35,14 @@ final appRouter = GoRouter(
   ),
 
   routes: [
+    GoRoute(
+      path: '/select-gym',
+      builder: (_, __) => const GymListScreen(),
+    ),
+    GoRoute(
+      path: '/gym-owner',
+      builder: (_, __) => const GymOwnerDashboard(),
+    ),
     // ─── Auth ──────────────────────────────────────────────────
     GoRoute(
       path: '/login',

@@ -16,6 +16,16 @@ class ApiEndpoints {
   static const exercises      = '/api/exercises';
   static const exerciseDetail = '/api/exercises/:id';
 
+  // ─── Gym → /api/gyms ───────────────────────────────────────
+  static const gyms           = '/api/gyms';
+  static const joinGym        = '/api/gyms/join';
+  static const myGym          = '/api/gyms/my-gym';
+  static const createGym      = '/api/gyms/create';
+  static String gymMembers(String gymId)         => '/api/gyms/$gymId/members';
+  static String memberData(String gymId, String memberId) => '/api/gyms/$gymId/members/$memberId';
+  static String gymOffers(String gymId)          => '/api/gyms/$gymId/offers';
+  static String deleteOffer(String gymId, String offerId) => '/api/gyms/$gymId/offers/$offerId';
+
   // ─── Steps → /api/steps ────────────────────────────────────
   static const stepsSync   = '/api/steps/sync';
   static const stepsTrends = '/api/steps/trends';
